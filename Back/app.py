@@ -8,10 +8,13 @@ from dotenv import load_dotenv
 import httpx
 import os
 
+# Modules
+from Back.auth import get_access_token
+from Back.comment import post_comment
 
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-clienty = genai.Client(api_key=GEMINI_API_KEY)
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 @asynccontextmanager
@@ -48,15 +51,15 @@ async def receive_github_webhook(
       # to get the code changes
       # follow_redirects or u will get 302 status code
       # as github redirects the request
-      async with httpx.AsyncClient(follow_redirects=True) as client:
-        response = await client.get(diff_url)
+      async with httpx.AsyncClient(follow_redirects=True) as cli:
+        response = await cli.get(diff_url)
         
       if response.status_code == 200:
         diff_text = response.text
         
           
         # api call + with the system prompt
-        ai_response = clienty.models.generate_content(
+        ai_response = client.models.generate_content(
           model="gemini-2.5-flash",
           contents=f"Review this code diff:\n {diff_text}",
           config=types.GenerateContentConfig(
@@ -65,10 +68,22 @@ async def receive_github_webhook(
           )
         )
         
-        print(ai_response.text)
-      
+        # get the installation id in the webhook for the repo the app is installed on
+        install_id = payload["installation"]["id"]
+        
+        # get the access token to be able to post the comment
+        access_token = await get_access_token(installation_id=install_id)
+        
+        # post the comment on the pullrequest
+        await post_comment(
+          ai_response= ai_response.text,
+          repo_full_name= payload["repository"]["full_name"],
+          pr_number= pr_number,
+          access_token= access_token
+          
+        )
+        
       else:
         raise HTTPException(status_code=response.status_code, detail="Something went wrong")
       
   return {"status": "success"}
-  
