@@ -1,0 +1,10 @@
+front/
+.env
+*.pem
+
+.git/
+__pycache__/
+.venv/
+
+
+.idea/
