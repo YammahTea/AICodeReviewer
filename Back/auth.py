@@ -9,8 +9,7 @@ load_dotenv()
 
 client_id = os.getenv("CLIENT_ID")
 raw_key = os.getenv("PRIVATE_KEY")
-signing_key = raw_key.replace("\\n", "\n") #
-
+signing_key = raw_key.replace("\\n", "\n")
 
 def create_jwt():
   # check

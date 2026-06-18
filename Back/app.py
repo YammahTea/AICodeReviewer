@@ -4,6 +4,8 @@ from contextlib import asynccontextmanager
 from google import genai
 from google.genai import types
 
+from mangum import Mangum
+
 from dotenv import load_dotenv
 import httpx
 import os
@@ -57,9 +59,9 @@ async def receive_github_webhook(
       if response.status_code == 200:
         diff_text = response.text
         
-          
+        
         # api call + with the system prompt
-        ai_response = client.models.generate_content(
+        ai_response = await client.aio.models.generate_content(
           model="gemini-2.5-flash",
           contents=f"Review this code diff:\n {diff_text}",
           config=types.GenerateContentConfig(
@@ -87,3 +89,5 @@ async def receive_github_webhook(
         raise HTTPException(status_code=response.status_code, detail="Something went wrong")
       
   return {"status": "success"}
+
+handler = Mangum(app, lifespan="auto")

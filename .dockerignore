@@ -2,9 +2,14 @@ front/
 .env
 *.pem
 
+.gitignore
 .git/
 __pycache__/
+*.pyc
 .venv/
+*.pyo
+.venv
+venv
 
 
 .idea/
