@@ -4,6 +4,8 @@ from contextlib import asynccontextmanager
 from google import genai
 from google.genai import types
 
+from mangum import Mangum
+
 from dotenv import load_dotenv
 import httpx
 import os
@@ -59,7 +61,7 @@ async def receive_github_webhook(
         
           
         # api call + with the system prompt
-        ai_response = client.models.generate_content(
+        ai_response = await client.aio.models.generate_content(
           model="gemini-2.5-flash",
           contents=f"Review this code diff:\n {diff_text}",
           config=types.GenerateContentConfig(
@@ -87,3 +89,7 @@ async def receive_github_webhook(
         raise HTTPException(status_code=response.status_code, detail="Something went wrong")
       
   return {"status": "success"}
+
+# NOTE: this will not have any effect if you run it on an EC2 or local (uvicorn points directly to the app object)
+# but for aws lambda, it will point to the "handler"
+handler = Mangum(app, lifespan="auto")
