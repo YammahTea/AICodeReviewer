@@ -38,8 +38,10 @@ PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEAzcy2I81Rmb0w...\n-
 1. Go to [github.com/settings/profile](https://github.com/settings/profile)
 2. Scroll down on the right sidebar and click **Developer settings**
 3. Click **GitHub Apps** then **New GitHub App**
-3.1. Only fill in the App's name
-3.2. Scroll down to find `Homepage URL` section and fill it with this format: `https://github.com/{YOUR_GITHUB_USERNAME}`
+
+   3.1. Only fill in the App's name
+   
+   3.2. Scroll down to find `Homepage URL` section and fill it with this format: `https://github.com/{YOUR_GITHUB_USERNAME}`
 5. After creating the app, click the **General** tab on the left
 6. `APP_ID` and `CLIENT_ID` are listed below the **About** section
 
